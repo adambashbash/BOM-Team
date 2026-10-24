@@ -14,3 +14,18 @@ I gained experience with NetCDF, xarray and PyTorch, particularly in preparing w
 ### Remaining work
 
 The prototype uses a simplified ConvGRU-style temporal component. Further work includes implementing the planned Transformer, validating on genuine ACCESS-SY data, correcting the split and normalization procedure, and comparing forecasts against a persistence baseline. The final environment, configurations and results also need to be recorded for reproducibility.
+
+## Kecheng
+### My contributions
+
+I built the CRAFT model and data pipeline as two parts. `model.ipynb` implements the full architecture end to end: a CNN encoder `E` compressing each wind frame into latent tokens, a latent autoregressive Transformer `F` with factorized axial attention (temporal, row, column), and a mirror decoder `D`, trained as one graph with scheduled sampling and pure-latent rollout. `data_process.ipynb` turns the raw ACCESS-SY analysis fields into a cropped 744 x 892 grid, interpolates 10-minute intermediates and streams them to parquet. For the main experiment I added `server_data_process.ipynb` and `server_model.ipynb` for the native hourly server data: sharded parquet with a manifest, gap-aware windowing, lazy LRU loading, a chronological 70/15/15 split and train-only normalization cached to a sidecar.
+
+Most of the later work included reducing computational cost and bug fixing. The recorded run reached best validation MSE 0.7315 and beat the hourly-linear baseline by +80.7% (u) and +76.1% (v) at 12 h lead, with reconstruction RMSE 2.05/3.15 m/s. I also wrote the experiments runbook and updated the contributor docs.
+
+### What I learned
+
+I learned how a latent nowcasting model behaves in practice: what the encode/decode bottleneck discards, why rollouts accumulate error and inflate variance at longer leads, and why axial factorization is what makes spatial compression pay off. Most performance problems turned out to be memory behaviour rather than compute, and a bug-free pipeline is still a long way from a meaningful forecast.
+
+### Remaining work
+
+The notebooks train on u/v wind only while the paper defines five surface channels, and the processed record held ~5 months of hourly data rather than 12. Short-range skill is still weak (persistence beats the model at lead 1, -39.9% for v-wind), and the recorded run used 3 epochs at reduced width and depth, so it validates the pipeline, not model capacity. The planned ablations (compression factor, latent width, temporal vs axial attention, sampling schedule, reconstruction loss, full-resolution baseline) and full-archive training on Gadi remain.
