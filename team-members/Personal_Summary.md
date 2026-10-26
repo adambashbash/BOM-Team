@@ -29,3 +29,16 @@ I learned how a latent nowcasting model behaves in practice: what the encode/dec
 ### Remaining work
 
 The notebooks train on u/v wind only while the paper defines five surface channels, and the processed record held ~5 months of hourly data rather than 12. Short-range skill is still weak (persistence beats the model at lead 1, -39.9% for v-wind), and the recorded run used 3 epochs at reduced width and depth, so it validates the pipeline, not model capacity. The planned ablations (compression factor, latent width, temporal vs axial attention, sampling schedule, reconstruction loss, full-resolution baseline) and full-archive training on Gadi remain.
+
+## Junling
+### My contributions
+
+My contributions focused on preparing and exploring weather data, reproducing the YSSY processing and LightGBM baseline workflow, and investigating temporal interpolation for ACCESS-SY wind fields. I implemented and visualised alternative interpolation methods, including semi-Lagrangian advection, and reviewed the CRAFT paper to identify questions about model design and evaluation.
+
+### What I learned
+
+I learned how to process and align meteorological datasets, evaluate forecasting baselines, and distinguish smooth-looking interpolated fields from physically realistic and useful predictions. I also developed a better understanding of model assumptions, computational costs, and error accumulation in multi-step forecasting.
+
+### Remaining work
+
+Further work includes quantitatively comparing interpolation methods and testing whether they improve downstream forecasting performance.
